@@ -42,6 +42,12 @@
         "projectId": "130ea482-67df-4401-b45e-6be59a24688a"
       }
     },
-    "owner": "polthm"
+    "owner": "polthm",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/130ea482-67df-4401-b45e-6be59a24688a"
+    }
   }
 }
