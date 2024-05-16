@@ -132,14 +132,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderBottomWidth: 1,
-    margin: 10,
+    marginHorizontal: 10,
+    marginBottom: 10,
   },
   searchBar: {
     flex: 1,
     padding: 10,
   },
   clearButton: {
-    padding: 10,
+    paddingHorizontal: 10,
   },
   item: {
     flexDirection: 'row',
