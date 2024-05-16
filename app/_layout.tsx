@@ -60,7 +60,7 @@ export default function RootLayout() {
         <ThemedView style={{ flex: 1, paddingTop: 20 }}>
           <ThemedText
             style={{
-              fontSize: 20,
+              fontSize: 25,
               textAlign: 'center',
               padding: 20,
               borderBottomWidth: 1,
