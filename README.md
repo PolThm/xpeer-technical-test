@@ -46,4 +46,3 @@ In the output, you'll find options to open the app in a
 
 ## Thanks for reading! 
 Pol Thomas
-```
