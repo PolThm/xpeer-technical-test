@@ -7,7 +7,7 @@ This is a technical test for a job application. The app is a simple list of char
 
 Test the app on your phone by scanning the QR code below with the Expo Go app. You can download the Expo Go app from the [App Store](https://apps.apple.com/app/apple-store/id982107779) or [Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent).
 
-👉 [Link to the QR code](https://expo.dev/preview/update?message=feat%3A%20small%20improvement%20on%20the%20search%20bar%20style&updateRuntimeVersion=1.0.0&createdAt=2024-05-16T03%3A18%3A35.660Z&slug=exp&projectId=130ea482-67df-4401-b45e-6be59a24688a&group=5ca40bf7-b62a-454e-bf1f-47fe593fcebc/)
+👉 [Link to the QR code](https://expo.dev/preview/update?message=feat%3A%20improve%20error%20message&updateRuntimeVersion=1.0.0&createdAt=2024-05-16T13%3A24%3A02.937Z&slug=exp&projectId=130ea482-67df-4401-b45e-6be59a24688a&group=cba47925-8739-4a8d-800c-7d7215cb544b/)
 
 
 ## Some fabrication details
