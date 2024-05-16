@@ -1,7 +1,7 @@
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
-import { FlatList, StyleSheet, Image, Pressable, TextInput } from 'react-native';
+import { FlatList, StyleSheet, Image, Pressable, TextInput, View } from 'react-native';
 
 import { fetchCharacters } from '@/api';
 import Loader from '@/components/Loader';
@@ -61,13 +61,20 @@ const CharactersList = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <TextInput
-        style={[styles.searchBar, { borderColor, color }]}
-        placeholder="Search characters"
-        placeholderTextColor={placeholderColor}
-        value={searchText}
-        onChangeText={setSearchText}
-      />
+      <View style={[styles.searchContainer, { borderColor }]}>
+        <TextInput
+          style={[styles.searchBar, { color }]}
+          placeholder="Search..."
+          placeholderTextColor={placeholderColor}
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+        <Pressable
+          onPress={() => setSearchText('')}
+          style={{ opacity: searchText.length > 0 ? 1 : 0 }}>
+          <ThemedText style={styles.clearButton}>✕</ThemedText>
+        </Pressable>
+      </View>
       <FlatList
         data={filteredCharacters}
         keyExtractor={(item) => item.id.toString()}
@@ -120,10 +127,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  searchBar: {
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     borderBottomWidth: 1,
     margin: 10,
+  },
+  searchBar: {
+    flex: 1,
+    padding: 10,
+  },
+  clearButton: {
+    padding: 10,
   },
   item: {
     flexDirection: 'row',
