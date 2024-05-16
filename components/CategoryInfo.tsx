@@ -12,17 +12,15 @@ interface CategoryInfoProps {
 }
 
 const CategoryInfo: React.FC<CategoryInfoProps> = ({ label, value }) => {
-  const textColor = useThemeColor({}, 'text');
+  const color = useThemeColor({}, 'text');
   const borderColor = useThemeColor({}, 'border');
 
   return (
     <ThemedView style={[styles.infoContainer, { borderColor }]}>
-      <ThemedText type="subtitle" style={[styles.label, { color: textColor }]}>
+      <ThemedText type="subtitle" style={[styles.label, { color }]}>
         {label}
       </ThemedText>
-      <ThemedText style={[styles.info, { color: textColor }]}>
-        {transformFalsyString(value)}
-      </ThemedText>
+      <ThemedText style={[styles.info, { color }]}>{transformFalsyString(value)}</ThemedText>
     </ThemedView>
   );
 };

@@ -1,17 +1,22 @@
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import React from 'react';
-import { FlatList, StyleSheet, Image, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, StyleSheet, Image, Pressable, TextInput } from 'react-native';
 
 import { fetchCharacters } from '@/api';
 import Loader from '@/components/Loader';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { CharactersResponse, Character, RootStackParamList } from '@/types';
 import transformFalsyString from '@/utils/transformFalsyString';
 
 const CharactersList = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [searchText, setSearchText] = useState('');
+  const placeholderColor = useThemeColor({}, 'placeholder');
+  const borderColor = useThemeColor({}, 'border');
+  const color = useThemeColor({}, 'text');
 
   const { data, error, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery<CharactersResponse, Error>({
@@ -50,16 +55,28 @@ const CharactersList = () => {
   };
 
   const characters = data?.pages.flatMap((page) => page.results) ?? [];
+  const filteredCharacters = characters.filter((character) =>
+    character.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
-    <FlatList
-      data={characters}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={renderItem}
-      onEndReached={loadMore}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={isFetchingNextPage ? <Loader /> : null}
-    />
+    <ThemedView style={styles.container}>
+      <TextInput
+        style={[styles.searchBar, { borderColor, color }]}
+        placeholder="Search characters"
+        placeholderTextColor={placeholderColor}
+        value={searchText}
+        onChangeText={setSearchText}
+      />
+      <FlatList
+        data={filteredCharacters}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={isFetchingNextPage ? <Loader /> : null}
+      />
+    </ThemedView>
   );
 };
 
@@ -89,7 +106,9 @@ const CharacterItem = ({
     <ThemedView style={styles.item}>
       <Image source={{ uri: item.image }} style={styles.image} />
       <ThemedView style={styles.info}>
-        <ThemedText style={styles.name}>{item.name}</ThemedText>
+        <ThemedText style={styles.name} type="defaultSemiBold">
+          {item.name}
+        </ThemedText>
         <ThemedText>Status: {status}</ThemedText>
         <ThemedText>Origin: {origin}</ThemedText>
       </ThemedView>
@@ -98,6 +117,14 @@ const CharacterItem = ({
 );
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  searchBar: {
+    padding: 10,
+    borderBottomWidth: 1,
+    margin: 10,
+  },
   item: {
     flexDirection: 'row',
     padding: 10,
@@ -115,7 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   name: {
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
 
