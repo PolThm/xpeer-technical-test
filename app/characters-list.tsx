@@ -37,11 +37,11 @@ const CharactersList = () => {
     return <Loader />;
   }
 
-  if (!error) {
+  if (error) {
     return (
       <ThemedView style={styles.container}>
         <ThemedText style={{ padding: 10 }}>
-          Error fetching data. Please look at your network connection.
+          Error fetching data. Please check your network connection.
         </ThemedText>
       </ThemedView>
     );
