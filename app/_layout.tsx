@@ -38,7 +38,6 @@ export default function RootLayout() {
             staleTime: 1000 * 60 * 5, // stale after 5 minutes
             gcTime: Infinity, // never garbage collect
             retry: 2, // retry failed requests twice
-            refetchOnWindowFocus: false, // don't refetch on window focus
           },
         },
       }),
@@ -61,7 +60,7 @@ export default function RootLayout() {
         <ThemedView style={{ flex: 1, paddingTop: 20 }}>
           <ThemedText
             style={{
-              fontSize: 25,
+              fontSize: 20,
               textAlign: 'center',
               padding: 20,
               borderBottomWidth: 1,

@@ -37,8 +37,14 @@ const CharactersList = () => {
     return <Loader />;
   }
 
-  if (error) {
-    return <ThemedText>Error fetching data</ThemedText>;
+  if (!error) {
+    return (
+      <ThemedView style={styles.container}>
+        <ThemedText style={{ padding: 10 }}>
+          Error fetching data. Please look at your network connection.
+        </ThemedText>
+      </ThemedView>
+    );
   }
 
   const loadMore = () => {
