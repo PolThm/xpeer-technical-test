@@ -2,11 +2,12 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import 'react-native-reanimated';
 import { QueryClient } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 
+import { BackButton } from '@/components/BackButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -14,11 +15,14 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 
+import { useThemeColor } from '@/hooks/useThemeColor';
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const borderColor = useThemeColor({}, 'border');
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     GetSchwifty: require('../assets/fonts/get_schwifty.ttf'),
@@ -37,7 +41,7 @@ export default function RootLayout() {
           queries: {
             staleTime: 1000 * 60 * 5, // stale after 5 minutes
             gcTime: Infinity, // never garbage collect
-            retry: 2, // retry failed requests twice
+            retry: 3, // retry failed requests 3 times
           },
         },
       }),
@@ -58,17 +62,23 @@ export default function RootLayout() {
       persistOptions={{ persister: asyncStoragePersister }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <ThemedView style={{ flex: 1, paddingTop: 20 }}>
-          <ThemedText
+          <ThemedView
             style={{
-              fontSize: 25,
-              textAlign: 'center',
               padding: 20,
               borderBottomWidth: 1,
-              borderBottomColor: '#ccc',
-              fontFamily: 'GetSchwifty',
+              borderBottomColor: borderColor,
+              zIndex: 3,
             }}>
-            Rick and Morty characters
-          </ThemedText>
+            <BackButton />
+            <ThemedText
+              style={{
+                fontSize: 25,
+                textAlign: 'center',
+                fontFamily: 'GetSchwifty',
+              }}>
+              Rick and Morty characters
+            </ThemedText>
+          </ThemedView>
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="character-details" options={{ headerShown: false }} />

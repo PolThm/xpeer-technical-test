@@ -1,5 +1,6 @@
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import * as Updates from 'expo-updates';
 import React, { useState } from 'react';
 import { FlatList, StyleSheet, Image, Pressable, TextInput, View } from 'react-native';
 
@@ -39,9 +40,10 @@ const CharactersList = () => {
 
   if (error) {
     return (
-      <ThemedView style={styles.container}>
-        <ThemedText style={{ padding: 10 }}>
-          Error fetching data. Please check your network connection.
+      <ThemedView style={[styles.container, { padding: 10 }]}>
+        <ThemedText>Error fetching data. Please check your network connection.</ThemedText>
+        <ThemedText type="link" style={{ marginTop: 10 }} onPress={() => Updates.reloadAsync()}>
+          Reload the app
         </ThemedText>
       </ThemedView>
     );
