@@ -1,27 +1,42 @@
-import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, Image, Pressable, TextInput, View } from 'react-native';
+import debounce from 'lodash.debounce';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { FlatList } from 'react-native';
 
 import { fetchCharacters } from '@/api';
+import CharacterPreview from '@/components/CharacterPreview';
+import ErrorModal from '@/components/ErrorModal';
 import Loader from '@/components/Loader';
+import SearchBar from '@/components/SearchBar';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { CharactersResponse, Character, RootStackParamList } from '@/types';
+import { CharactersResponse, Character } from '@/types';
 import transformFalsyString from '@/utils/transformFalsyString';
 
-const CharactersList = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+export default function CharactersList() {
   const [searchText, setSearchText] = useState('');
-  const placeholderColor = useThemeColor({}, 'placeholder');
-  const borderColor = useThemeColor({}, 'border');
-  const color = useThemeColor({}, 'text');
+  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
+  const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
 
-  const { data, error, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const debouncedSetSearchText = useCallback(
+    debounce((text) => setDebouncedSearchText(text), 300),
+    []
+  );
+
+  const handleSearchText = (text: string, immediate = false) => {
+    setSearchText(text);
+    if (immediate) {
+      setDebouncedSearchText(text); // to reset input immediately with the clear button
+    } else {
+      debouncedSetSearchText(text);
+    }
+  };
+
+  const { data, isError, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useInfiniteQuery<CharactersResponse, Error>({
-      queryKey: ['characters'],
-      queryFn: ({ pageParam = 1 }: { pageParam: any }) => fetchCharacters({ pageParam }),
+      queryKey: ['characters', debouncedSearchText],
+      queryFn: ({ pageParam = 1 }: { pageParam: any }) =>
+        fetchCharacters({ pageParam, name: debouncedSearchText }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) => {
         if (lastPage.info.next) {
@@ -33,140 +48,52 @@ const CharactersList = () => {
       },
     });
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  useEffect(() => {
+    if (isError) setIsErrorModalVisible(true);
+  }, [isError]);
 
-  if (error) {
-    return (
-      <ThemedView style={styles.container}>
-        <ThemedText style={{ padding: 10 }}>
-          Error fetching data. Please check your network connection.
-        </ThemedText>
-      </ThemedView>
-    );
-  }
+  useEffect(() => {
+    refetch();
+  }, [debouncedSearchText, refetch]);
 
-  const loadMore = () => {
-    if (hasNextPage) {
-      fetchNextPage();
-    }
-  };
+  const loadMore = useCallback(() => {
+    if (hasNextPage) fetchNextPage();
+  }, [hasNextPage, fetchNextPage]);
 
-  const renderItem = ({ item }: { item: Character }) => {
+  const renderItem = useCallback(({ item }: { item: Character }) => {
     const status = transformFalsyString(item.status);
     const origin = transformFalsyString(item.origin.name);
 
-    return <CharacterItem item={item} status={status} origin={origin} navigation={navigation} />;
-  };
+    return <CharacterPreview item={item} status={status} origin={origin} />;
+  }, []);
 
-  const characters = data?.pages.flatMap((page) => page.results) ?? [];
-  const filteredCharacters = characters.filter((character) =>
-    character.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const characters = useMemo(() => data?.pages.flatMap((page) => page.results) ?? [], [data]);
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={[styles.searchContainer, { borderColor }]}>
-        <TextInput
-          style={[styles.searchBar, { color }]}
-          placeholder="Search..."
-          placeholderTextColor={placeholderColor}
-          value={searchText}
-          onChangeText={setSearchText}
-        />
-        <Pressable
-          onPress={() => setSearchText('')}
-          style={{ opacity: searchText.length > 0 ? 1 : 0 }}>
-          <ThemedText style={styles.clearButton}>✕</ThemedText>
-        </Pressable>
-      </View>
-      <FlatList
-        data={filteredCharacters}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={isFetchingNextPage ? <Loader /> : null}
-      />
+    <ThemedView style={{ flex: 1 }}>
+      <SearchBar searchText={searchText} setSearchText={handleSearchText} />
+      {isLoading && !isFetchingNextPage ? (
+        <ThemedView style={{ height: 80 }}>
+          <Loader />
+        </ThemedView>
+      ) : (
+        <>
+          {debouncedSearchText && !characters.length && (
+            <ThemedText style={{ paddingHorizontal: 20, marginTop: 10 }}>
+              No results found...
+            </ThemedText>
+          )}
+          <FlatList
+            data={characters}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={isFetchingNextPage ? <Loader /> : null}
+          />
+        </>
+      )}
+      <ErrorModal visible={isErrorModalVisible} onClose={() => setIsErrorModalVisible(false)} />
     </ThemedView>
   );
-};
-
-const CharacterItem = ({
-  item,
-  status,
-  origin,
-  navigation,
-}: {
-  item: Character;
-  status: string;
-  origin: string;
-  navigation: NavigationProp<RootStackParamList>;
-}) => (
-  <Pressable
-    onPress={() =>
-      navigation.navigate('character-details', {
-        id: item.id,
-        image: item.image,
-        name: item.name,
-        status: item.status,
-        origin: item.origin,
-        gender: item.gender,
-        location: item.location,
-      })
-    }>
-    <ThemedView style={styles.item}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <ThemedView style={styles.info}>
-        <ThemedText style={styles.name} type="defaultSemiBold">
-          {item.name}
-        </ThemedText>
-        <ThemedText>Status: {status}</ThemedText>
-        <ThemedText>Origin: {origin}</ThemedText>
-      </ThemedView>
-    </ThemedView>
-  </Pressable>
-);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    marginHorizontal: 10,
-    marginBottom: 10,
-  },
-  searchBar: {
-    flex: 1,
-    padding: 10,
-  },
-  clearButton: {
-    paddingHorizontal: 10,
-  },
-  item: {
-    flexDirection: 'row',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  image: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  info: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  name: {
-    fontWeight: '600',
-  },
-});
-
-export default CharactersList;
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -6,21 +6,20 @@ import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import transformFalsyString from '@/utils/transformFalsyString';
 
-interface CategoryInfoProps {
+type Props = {
   label: string;
   value: string | undefined | null;
-}
+};
 
-const CategoryInfo: React.FC<CategoryInfoProps> = ({ label, value }) => {
-  const color = useThemeColor({}, 'text');
+const CategoryInfo: FC<Props> = ({ label, value }) => {
   const borderColor = useThemeColor({}, 'border');
 
   return (
     <ThemedView style={[styles.infoContainer, { borderColor }]}>
-      <ThemedText type="subtitle" style={[styles.label, { color }]}>
+      <ThemedText type="subtitle" style={styles.label}>
         {label}
       </ThemedText>
-      <ThemedText style={[styles.info, { color }]}>{transformFalsyString(value)}</ThemedText>
+      <ThemedText style={styles.info}>{transformFalsyString(value)}</ThemedText>
     </ThemedView>
   );
 };

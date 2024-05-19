@@ -2,7 +2,6 @@ import { useRoute, RouteProp } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Image, ScrollView, View } from 'react-native';
 
-import { BackButton } from '@/components/BackButton';
 import CategoryInfo from '@/components/CategoryInfo';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -17,7 +16,6 @@ export default function CharacterDetails() {
     <ThemedView style={styles.outerContainer}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <ThemedView style={styles.container}>
-          <BackButton />
           <Image source={{ uri: image }} style={styles.image} />
           <ThemedText style={styles.name}>{name}</ThemedText>
           <View style={styles.infoWrapper}>

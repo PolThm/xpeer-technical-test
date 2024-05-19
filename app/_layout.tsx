@@ -1,18 +1,17 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { QueryClient } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useMemo } from 'react';
 import 'react-native-reanimated';
-import { QueryClient } from '@tanstack/react-query';
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 
-import { ThemedText } from '@/components/ThemedText';
+import Header from '@/components/Header';
 import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -44,31 +43,22 @@ export default function RootLayout() {
     []
   );
 
-  const asyncStoragePersister = createAsyncStoragePersister({
-    storage: AsyncStorage,
-  });
+  const asyncStoragePersister = useMemo(
+    () => createAsyncStoragePersister({ storage: AsyncStorage }),
+    []
+  );
 
-  if (!loaded) {
-    return null;
-  }
+  const theme = useMemo(() => (colorScheme === 'dark' ? DarkTheme : DefaultTheme), [colorScheme]);
+
+  if (!loaded) return null;
 
   return (
     <PersistQueryClientProvider
       client={queryClient}
       persistOptions={{ persister: asyncStoragePersister }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <ThemedView style={{ flex: 1, paddingTop: 20 }}>
-          <ThemedText
-            style={{
-              fontSize: 25,
-              textAlign: 'center',
-              padding: 20,
-              borderBottomWidth: 1,
-              borderBottomColor: '#ccc',
-              fontFamily: 'GetSchwifty',
-            }}>
-            Rick and Morty characters
-          </ThemedText>
+      <ThemeProvider value={theme}>
+        <ThemedView style={{ flex: 1 }}>
+          <Header />
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="character-details" options={{ headerShown: false }} />
