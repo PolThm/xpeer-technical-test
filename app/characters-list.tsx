@@ -7,8 +7,8 @@ import { fetchCharacters } from '@/api';
 import CharacterPreview from '@/components/CharacterPreview';
 import ErrorModal from '@/components/ErrorModal';
 import Loader from '@/components/Loader';
+import NoResultsFound from '@/components/NoResultsFound';
 import SearchBar from '@/components/SearchBar';
-import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { CharactersResponse, Character } from '@/types';
 import transformFalsyString from '@/utils/transformFalsyString';
@@ -68,21 +68,19 @@ export default function CharactersList() {
   }, []);
 
   const characters = useMemo(() => data?.pages.flatMap((page) => page.results) ?? [], [data]);
+  const noResultsFound = useMemo(
+    () => debouncedSearchText && !characters.length,
+    [debouncedSearchText, characters.length]
+  );
 
   return (
     <ThemedView style={{ flex: 1 }}>
       <SearchBar searchText={searchText} setSearchText={handleSearchText} />
       {isLoading && !isFetchingNextPage ? (
-        <ThemedView style={{ height: 80 }}>
-          <Loader />
-        </ThemedView>
+        <Loader />
       ) : (
         <>
-          {debouncedSearchText && !characters.length && (
-            <ThemedText style={{ paddingHorizontal: 20, marginTop: 10 }}>
-              No results found...
-            </ThemedText>
-          )}
+          {noResultsFound && <NoResultsFound />}
           <FlatList
             data={characters}
             keyExtractor={(item) => item.id.toString()}

@@ -12,6 +12,9 @@ import 'react-native-reanimated';
 import Header from '@/components/Header';
 import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Paths } from '@/types';
+
+const { CharactersList, CharacterDetails, NotFound } = Paths;
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -24,9 +27,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
+    if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
   const queryClient = useMemo(
@@ -59,10 +60,10 @@ export default function RootLayout() {
       <ThemeProvider value={theme}>
         <ThemedView style={{ flex: 1 }}>
           <Header />
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="character-details" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name={CharactersList} />
+            <Stack.Screen name={CharacterDetails} />
+            <Stack.Screen name={NotFound} />
           </Stack>
         </ThemedView>
       </ThemeProvider>

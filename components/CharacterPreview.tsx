@@ -5,7 +5,7 @@ import { Image, Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Character, RootStackParamList } from '@/types';
+import { Character, Paths, RootStackParamList } from '@/types';
 
 type Props = {
   item: Character;
@@ -20,7 +20,7 @@ const CharacterPreview: FC<Props> = ({ item, status, origin }) => {
   return (
     <Pressable
       onPress={() =>
-        navigation.navigate('character-details', {
+        navigation.navigate(Paths.CharacterDetails, {
           id: item.id,
           image: item.image,
           name: item.name,

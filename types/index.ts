@@ -1,3 +1,9 @@
+export enum Paths {
+  CharactersList = 'characters-list',
+  CharacterDetails = 'character-details',
+  NotFound = '+not-found',
+}
+
 export interface Origin {
   name: string;
   url: string;

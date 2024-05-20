@@ -38,14 +38,6 @@ describe('Loader', () => {
     const styles = themedView.props.style;
 
     // Assert that the necessary styles are applied
-    expect(styles).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }),
-      ])
-    );
+    expect(styles).toEqual(expect.arrayContaining([expect.objectContaining({ padding: 20 })]));
   });
 });

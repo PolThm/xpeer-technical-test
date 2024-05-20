@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { Pressable, StyleSheet, Animated } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { RootStackParamList } from '@/types';
+import { Paths, RootStackParamList } from '@/types';
 
 const BackButton = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -33,7 +33,7 @@ const BackButton = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.navigate('index');
+      navigation.navigate(Paths.CharactersList);
     }
   };
 
