@@ -6,14 +6,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Character, Paths, RootStackParamList } from '@/types';
+import transformFalsyString from '@/utils/transformFalsyString';
 
 type Props = {
   item: Character;
-  status: string;
-  origin: string;
 };
 
-const CharacterPreview: FC<Props> = ({ item, status, origin }) => {
+const CharacterPreview: FC<Props> = ({ item }) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const borderColor = useThemeColor({}, 'border');
 
@@ -34,10 +33,10 @@ const CharacterPreview: FC<Props> = ({ item, status, origin }) => {
         <Image source={{ uri: item.image }} style={styles.image} />
         <ThemedView style={styles.info}>
           <ThemedText style={styles.name} type="defaultSemiBold">
-            {item.name}
+            {transformFalsyString(item.name)}
           </ThemedText>
-          <ThemedText>Status: {status}</ThemedText>
-          <ThemedText>Origin: {origin}</ThemedText>
+          <ThemedText>Status: {transformFalsyString(item.status)}</ThemedText>
+          <ThemedText>Origin: {transformFalsyString(item.origin.name)}</ThemedText>
         </ThemedView>
       </ThemedView>
     </Pressable>

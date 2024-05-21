@@ -10,8 +10,7 @@ import Loader from '@/components/Loader';
 import NoResultsFound from '@/components/NoResultsFound';
 import SearchBar from '@/components/SearchBar';
 import { ThemedView } from '@/components/ThemedView';
-import { CharactersResponse, Character } from '@/types';
-import transformFalsyString from '@/utils/transformFalsyString';
+import { CharactersResponse } from '@/types';
 
 export default function CharactersList() {
   const [searchText, setSearchText] = useState('');
@@ -60,13 +59,6 @@ export default function CharactersList() {
     if (hasNextPage) fetchNextPage();
   }, [hasNextPage, fetchNextPage]);
 
-  const renderItem = useCallback(({ item }: { item: Character }) => {
-    const status = transformFalsyString(item.status);
-    const origin = transformFalsyString(item.origin.name);
-
-    return <CharacterPreview item={item} status={status} origin={origin} />;
-  }, []);
-
   const characters = useMemo(() => data?.pages.flatMap((page) => page.results) ?? [], [data]);
   const noResultsFound = useMemo(
     () => debouncedSearchText && !characters.length,
@@ -84,7 +76,7 @@ export default function CharactersList() {
           <FlatList
             data={characters}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={renderItem}
+            renderItem={({ item }) => <CharacterPreview item={item} />}
             onEndReached={loadMore}
             onEndReachedThreshold={0.5}
             ListFooterComponent={isFetchingNextPage ? <Loader /> : null}
