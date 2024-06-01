@@ -6,8 +6,10 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useMemo } from 'react';
 import 'react-native-reanimated';
+import { useEffect, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Header from '@/components/Header';
 import { ThemedView } from '@/components/ThemedView';
@@ -58,15 +60,23 @@ export default function RootLayout() {
       client={queryClient}
       persistOptions={{ persister: asyncStoragePersister }}>
       <ThemeProvider value={theme}>
-        <ThemedView style={{ flex: 1 }}>
-          <Header />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name={CharactersList} />
-            <Stack.Screen name={CharacterDetails} />
-            <Stack.Screen name={NotFound} />
-          </Stack>
+        <ThemedView style={styles.container}>
+          <SafeAreaView style={styles.container}>
+            <Header />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name={CharactersList} />
+              <Stack.Screen name={CharacterDetails} />
+              <Stack.Screen name={NotFound} />
+            </Stack>
+          </SafeAreaView>
         </ThemedView>
       </ThemeProvider>
     </PersistQueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

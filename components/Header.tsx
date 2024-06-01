@@ -18,7 +18,6 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: 20,
     borderBottomWidth: 1,
     zIndex: 3,
     alignItems: 'center',
